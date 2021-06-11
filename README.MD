@@ -8,11 +8,11 @@ You probably don't need it.
 Use [jitpack](https://jitpack.io/ "jitpack"):
 
 ```xml
-	<dependency>
-	    <groupId>com.github.Master-chan</groupId>
-	    <artifactId>WitchBox</artifactId>
-	    <version>master-SNAPSHOT</version>
-	</dependency>
+<dependency>
+    <groupId>com.github.Master-chan</groupId>
+    <artifactId>WitchBox</artifactId>
+    <version>master-SNAPSHOT</version>
+</dependency>
 ```
 	
 ## Features:
