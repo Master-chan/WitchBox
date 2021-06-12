@@ -5,16 +5,9 @@ You probably don't need it.
 
 ## Dependency:
 
-Use [jitpack](https://jitpack.io/ "jitpack"):
+Use [jitpack](https://jitpack.io/ "jitpack"): 
+[![](https://jitpack.io/v/Master-chan/WitchBox.svg)](https://jitpack.io/#Master-chan/WitchBox)
 
-```xml
-<dependency>
-    <groupId>com.github.Master-chan</groupId>
-    <artifactId>WitchBox</artifactId>
-    <version>master-SNAPSHOT</version>
-</dependency>
-```
-	
 ## Features:
 
 * Bukkit-style module support. Loads .jar files from /module/ folder with simple dependency resolution.
