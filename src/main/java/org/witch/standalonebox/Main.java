@@ -1,6 +1,7 @@
 package org.witch.standalonebox;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import lombok.Getter;
@@ -33,6 +34,11 @@ public class Main
 				}
 			}
 		}, "WitchBox Shutdown Hook"));
+		
+		Thread.setDefaultUncaughtExceptionHandler((thread, throwable) ->
+		{
+			instance.getLogger().log(Level.SEVERE, String.format("Uncaught exception in thread %s", thread.getName()), throwable);
+		});
 		
 		String line;
 		while((instance.getIsRunning().get()) && ((line = instance.getConsoleReader().readLine()) != null))
