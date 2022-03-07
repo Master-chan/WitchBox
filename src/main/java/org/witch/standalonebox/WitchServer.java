@@ -79,11 +79,11 @@ public class WitchServer extends Server
 	    	logger.log(Level.INFO, "Couldn't load version.properties.", t);
 	    }
 
-	    logger.log(Level.INFO, "String WitchBox bootstrab server v{0}", version);
+	    logger.log(Level.INFO, "String WitchBox bootstrap server v{0}", version);
 
 		pluginFolder = new File("module");
 		scheduler = new ThreadPoolExecutorService(this, 
-				new ThreadFactoryBuilder().setNameFormat("WitchServer Scheduler Thread-%d").build(), 16);
+				new ThreadFactoryBuilder().setNameFormat("WitchServer Scheduler Thread-%d").setDaemon(true).build(), 16);
 
 		pluginManager = new PluginManager(this);
 		
