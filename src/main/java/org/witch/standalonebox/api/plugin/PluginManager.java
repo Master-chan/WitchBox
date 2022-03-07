@@ -44,6 +44,7 @@ public class PluginManager
 	private static boolean update = System.getenv("SkipPluginUpdates") == null;
 	
 	private final WitchServer server;
+	private final PluginUpdater updater = new PluginUpdater();
 	@Getter private final EventBus<Object, Object> eventBus;
 
 	private Map<String, PluginDescription> toLoad = new HashMap<>();
@@ -247,12 +248,6 @@ public class PluginManager
 				break;
 			}
 		}
-		
-		if(update)
-		{
-			
-			
-		}
 
 		// do actual loading
 		if(status)
@@ -318,38 +313,54 @@ public class PluginManager
 		{
 			if((file.isFile()) && (file.getName().endsWith(".jar")))
 			{
-				PluginDescription description;
-				try(JarFile jar = new JarFile(file))
+				while(true)
 				{
-					JarEntry pdf = null;
-					boolean json = false;
-					for(String name : namesToCheck)
+					PluginDescription description;
+					try(JarFile jar = new JarFile(file))
 					{
-						pdf = jar.getJarEntry(name);
-						json = name.endsWith(".json");
+						JarEntry pdf = null;
+						boolean json = false;
+						for(String name : namesToCheck)
+						{
+							pdf = jar.getJarEntry(name);
+							json = name.endsWith(".json");
+							if(pdf != null)
+							{
+								break;
+							}
+						}
+						// Preconditions.checkNotNull(pdf, "Plugin must have a plugin of boxplugin config file in .yml or .json format.");
+						// Plugin description file exists
 						if(pdf != null)
 						{
-							break;
+							try(InputStream in = jar.getInputStream(pdf))
+							{
+								description = json ? 
+										jsonMapper.loadConfiguration(in, PluginDescription.class) 
+										: ymlMapper.loadConfiguration(in, PluginDescription.class);
+										
+								if(update)
+								{
+									if(description.getUpdateUrl() != null && description.getUpdateUrl().length() > 0)
+									{
+										if(updater.updateJar(description.getUpdateUrl(), file))
+										{
+											// Redo the jar scan
+											continue;
+										}
+									}
+								}
+								description.setFile(file);
+								this.toLoad.put(description.getName(), description);
+							}
 						}
+						break;
 					}
-					
-					Preconditions.checkNotNull(pdf, "Plugin must have a plugin of boxplugin config file in .yml or .json format.");
-					// Plugin description file exists
-					if(pdf != null)
+					catch(Throwable ex)
 					{
-						try(InputStream in = jar.getInputStream(pdf))
-						{
-							description = json ? 
-									jsonMapper.loadConfiguration(in, PluginDescription.class) 
-									: ymlMapper.loadConfiguration(in, PluginDescription.class);
-							description.setFile(file);
-							this.toLoad.put(description.getName(), description);
-						}
+						Server.getInstance().getLogger().log(Level.WARNING, "Could not load plugin from file " + file, ex);
+						break;
 					}
-				}
-				catch(Throwable ex)
-				{
-					Server.getInstance().getLogger().log(Level.WARNING, "Could not load plugin from file " + file, ex);
 				}
 			}
 		}
