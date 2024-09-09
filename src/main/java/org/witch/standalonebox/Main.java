@@ -17,7 +17,7 @@ public class Main
 		return instance.getLogger();
 	}
 
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws IOException, InterruptedException
 	{
 
 		instance = new WitchServer();
@@ -40,13 +40,25 @@ public class Main
 			instance.getLogger().log(Level.SEVERE, String.format("Uncaught exception in thread %s", thread.getName()), throwable);
 		});
 		
-		String line;
-		while((instance.getIsRunning().get()) && ((line = instance.getConsoleReader().readLine()) != null))
+		if(instance.getConsoleReader() != null)
 		{
-			instance.getLogger().info(line);
-			if(!instance.getPluginManager().dispatchCommand(line))
+			String line;
+			while((line = instance.getConsoleReader().readLine()) != null)
 			{
-				instance.getLogger().info("Command not found");
+				instance.getLogger().info(line);
+				if(!instance.getPluginManager().dispatchCommand(line))
+				{
+					instance.getLogger().info("Command not found");
+				}
+			}
+		}
+				
+		// Don't exit if we don't have any terminal
+		synchronized(instance.getIsRunning())
+		{
+			while((instance.getIsRunning().get()))
+			{
+				instance.getIsRunning().wait();
 			}
 		}
 	}
