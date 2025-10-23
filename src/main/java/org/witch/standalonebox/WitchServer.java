@@ -117,11 +117,6 @@ public class WitchServer extends Server
 				logger.info("Disabling plugins...");
 				pluginManager.disablePlugins();
 			}
-			
-			synchronized(isRunning)
-			{
-				isRunning.notifyAll();
-			}
 		}
 	}
 	

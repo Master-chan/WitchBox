@@ -52,13 +52,16 @@ public class Main
 				}
 			}
 		}
-				
-		// Don't exit if we don't have any terminal
-		synchronized(instance.getIsRunning())
+
+		while(instance.getIsRunning().get())
 		{
-			while((instance.getIsRunning().get()))
+			try
 			{
-				instance.getIsRunning().wait();
+				Thread.sleep(1000L);
+			}
+			catch (InterruptedException e)
+			{
+				return;
 			}
 		}
 	}
